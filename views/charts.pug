@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<<html>
+<title>Visualize</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+	var myChart1,myChart;
+$(document).ready(function () { 
+      myChart = Highcharts.chart('container', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Fruit Consumption'
+        },
+
+        plotOptions: {
+                column: {
+                    colorByPoint: true
+                },
+                series:{
+                	cursor:'pointer',
+                	point:{
+                		events:{
+                			mouseOver: function(){
+                				 myChart1.series[0].setData([
+        ['number1',10+this.y],
+        ['number2',10],
+        ['number3',10],
+        ['number4',20],
+        ['number5',30],
+        ['number6',20]
+    ], true);
+
+                			}
+                		}
+                	}
+                }
+            },
+        xAxis: {
+            categories: ['user1', 'user2', 'user3']
+        },
+        yAxis: {
+            title: {
+                text: 'events logged'
+            }
+        },
+        colors: ['#7cb5ec', '#434348','#a6c96a'],
+        series: [{
+            name: 'user',
+            data: [50,122,50]
+        }]
+    });
+});
+
+$(document).ready(function(){
+
+      $.ajax({
+
+  type: "GET", 
+  url: "data", 
+  dataType: "json",     // change
+  success: function(response) { 
+   //obj=JSON.parse(response);
+   console.log("response is" + response);
+   }}
+);
+  });
+
+$(function () { 
+    myChart1 = Highcharts.chart('piec', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'Browser market shares January, 2015 to May, 2015'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                style: {
+                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                }
+            }
+        },
+        series:{
+                	cursor:'pointer',
+                	point:{
+                		events:{
+                			mouseOver: function(){
+                				 myChart.series[0].setData([
+        ['number1',10+this.y],
+        ['number2',10],
+        ['number3',10],
+        ['number4',20],
+        ['number5',30],
+        ['number6',20]
+    ], true);
+
+                			}
+                		}
+                	}
+                }
+            },
+    series: [{
+        name: 'events',
+        colorByPoint: true,
+        data: [{
+            name: 'Microsoft Internet Explorer',
+            y: 56.33
+        }, {
+            name: 'Chrome',
+            y: 24.03,
+            sliced: true,
+            selected: true
+        }, {
+            name: 'Firefox',
+            y: 10.38
+        }, {
+            name: 'Safari',
+            y: 4.77
+        }, {
+            name: 'Opera',
+            y: 0.91
+        }, {
+            name: 'Proprietary or Undetectable',
+            y: 0.2
+        }]
+    }]
+});
+});
+
+
+$(document).ready(function(){
+    $("#button").on("click", function(){
+       myChart1.series[0].setData([
+        ['number1',10],
+        ['number2',10],
+        ['number3',10],
+        ['number4',20],
+        ['number5',30],
+        ['number6',20]
+    ], true);
+});});
+
+</script>
+</head>
+<body>
+
+	<div class="w3-container">
+  h1 Welcome #{title} ,
+</div>
+
+<div class="w3-bar w3-red">
+  <form action = "/users" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Home </button> </form>
+  <form action = "/charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Visualize </button> </form>
+  <button class="w3-bar-item w3-button" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button>
+  <form action = "/viewlogs" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Events </button> </form> 
+  <form action = "/logactions" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Actions Description </button> </form>
+  <form action = "/logout" method = "POST"> <button class="w3-bar-item w3-button" type ="submit" > Log Out </button> </form>
+</div>
+<table>
+	<tr>
+		<td>
+
+<div id="container" style="width:100%; height:400px;"></div></td><td>
+<div id="piec" style="width:100%; height:400px;"></div></td>
+<input id="button" type="button" value="Update"/>
+</html>

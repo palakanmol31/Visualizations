@@ -1,0 +1,31 @@
+center
+	h1 LOGIN or SIGN UP
+	table
+		tr
+			td
+				form(action = "/login" , method = "POST")
+					p Username
+					input(type = "text" , name = "username")
+					p Password
+					input(type = "password", name = "password")
+					br
+					br
+					input(type = "submit" , value = "LOGIN")
+			td
+				form(action = "/signup" , method = "POST")
+					p Email
+					input(type = "text" , name = "email")
+					br
+					p Username
+					input(type = "text", name = "user")
+					br
+					p Password
+					input(type = "password", name = "pass")
+					br
+					br
+					input(type = "submit" , value = "SIGN UP")
+
+	span #{result}
+
+
+

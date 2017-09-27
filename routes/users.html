@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<title>User Page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" />
+<style>
+    * {
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    body {
+        background-color: #F2F2F2;
+    }
+
+    .container1 {
+        margin: 0 auto;
+        width: 450px;
+        height: 400px;
+        padding: 50px 20px;
+        background-color: #FFF;
+    }
+
+    h3 {
+        text-align: center;
+    }
+
+    #calendar {
+        margin-top: 40px;
+    }
+
+    .event a {
+        background-color: #42B373 !important;
+        background-image :none !important;
+        color: #ffffff !important;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js" > </script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" > </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        username = $.cookie('current_user');
+        $("#title").text("Welcome " + username + ",");
+
+        $.ajax({
+            type: "GET",
+            url: "/users/user_history/" + username,
+            success: function(response) {
+                var table = $('<table></table>') ;
+                for(var i=0; i< response.length; i++){
+                    var str = new Date(response[i].date);
+                    var row = $('<tr></tr>').text(str);
+                    table.append(row);
+                }
+                $('#history_table').append(table);
+            },
+            error: function(response){
+                console.log("error");
+                console.log(response);
+            }
+        });
+
+ /*       $.ajax({
+            type: "GET",
+            url: "/users/user_activity/" + username,
+            success: function(response) {
+                arr = [];
+                cat = [];
+                for(var i = 0 ; i < response.length ; i++){
+                    cat.push(response[i].html);
+                    arr.push([response[i].html , response[i].count]);
+                }
+
+                var options = {
+                    chart: {
+                        renderTo: 'Chart-Top-Activity',
+                        type: 'bar'
+                    },
+                    tooltip: {
+                        enabled: false
+                    },
+                    title: {
+                        text: 'Most viewed topics'
+                    },
+                    xAxis: {
+                        categories: cat
+                    },
+                    yAxis: {
+                        title: {
+                            text: '',
+                            margin: 10
+                        },
+                        labels: {
+                            enabled: true
+                        }
+                    },
+                    series: [{
+                        showInLegend: false,
+                        dataLables: {
+                            enabled: true
+                        },
+                        data: arr
+                    }]
+                };
+                var chart = Highcharts.chart('container',options);
+                console.log(response);
+            },
+            error: function(response){
+                console.log("error");
+                console.log(response);
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        $.ajax({
+            type: "GET",
+            url: "/users/active_date/" + username,
+            success: function(response) {
+                var eventDates = {};
+                for(var i = 0; i<response.length ; i++){
+                    eventDates[ new Date(response[i].date)] = new Date( response[i].date ).toString();
+                }
+
+                $('#calendar').datepicker({
+                    beforeShowDay: function( date ) {
+                        var highlight = eventDates[date];
+                        if( highlight ) {
+                            return [true, "event", highlight];
+                        } else {
+                            return [true, '', ''];
+                        }
+                    }
+                }).datepicker('disable');
+            },
+            error: function(response){
+                console.log("error");
+                console.log(response);
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        $.ajax({
+            type: "GET",
+            url: "/users/most_visited_links/" + username,
+            success: function(response) {
+                console.log(response);
+                var ul = document.getElementById("list");
+                for(var i=0; i< response.length; i++){
+                    var a = document.createElement("a");
+                    var li = document.createElement("li");
+                    a.textContent = response[i].url;
+                    a.setAttribute('href', response[i].url);
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                }
+                // $('#history_table').append(table);
+            },
+            error: function(response){
+                console.log("error");
+                console.log(response);
+            }
+        });
+
+
+    });
+
+    $(document).ready(function() {
+        $.ajax({
+            type: "GET",
+            url: "/users/active_time/" + username,
+            success: function(response) {
+                $("#time").text(response[0].hour + ":00 hours");
+                $("#activity").text(response[0].count);
+            },
+            error: function(response){
+                console.log("error");
+                console.log(response);
+            }
+        });
+
+
+    });
+
+
+    $(document).ready(function() {
+        $.ajax({
+            type: "GET",
+            url: "/users/active_time/" + username,
+            success: function(response) {
+                $("#time").text(response[0].hour + ":00 hours");
+                $("#activity").text(response[0].count);
+            },
+            error: function(response){
+                console.log("error");
+                console.log(response);
+            }
+        });
+*/
+
+    });
+
+</script>
+<body>
+<div class="w3-container">
+    <h1 id= "title"></h1>
+</div>
+<div class="w3-bar w3-gray">
+    <form action = "/users" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Home </button> </form>
+    <form action = "/charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Visualize </button> </form>
+    <button class="w3-bar-item w3-button" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button>
+    <form action = "/viewlogs" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Events </button> </form>
+    <form action = "/logactions" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Actions Description </button> </form>
+    <form action = "/logout" method = "POST"> <button class="w3-bar-item w3-button" type ="submit" > Log Out </button> </form>
+</div>
+<table>
+    <!--<tr><td>
+    <div id="container" style="width: 450px; height: 400px; margin: 0 auto"></div> </td>
+    <td>
+        <div class="container1">
+            <h4>Most Active Days</h4>
+            <div id="calendar" > </div>
+        </div>
+    </td>
+    <td>
+        <div class="container1">
+            <h4>Most Active Time Of The Day</h4>
+            <h5 id = "time"></h5>
+            <h6>with user activity</h6>
+            <h7 id = "activity"> </h7>
+        </div>
+    </td>
+</tr> -->
+    <tr>
+        <td><div id = "history_table"></div></td>
+        <td>
+            <div id="links">
+                <h4>Links Most Visited</h4>
+                <ol id="list"> </ol>
+            </div>
+        </td></tr></table>
+</body>
+</html>
+

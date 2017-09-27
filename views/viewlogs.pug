@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html>
+<title>Logs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<body>
+
+<div class="w3-container">
+  h1 Welcome #{title} ,
+</div>
+
+<div class="w3-bar w3-green">
+  <form action = "/users" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Home </button> </form>
+  <form action = "/charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Visualize </button> </form>
+  <button class="w3-bar-item w3-button" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button>
+  <form action = "/viewlogs" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Events </button> </form> 
+  <form action = "/logactions" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Actions Description </button> </form>
+  <form action = "/logout" method = "POST"> <button class="w3-bar-item w3-button" type ="submit" > Log Out </button> </form>
+</div>
+
+
+div.row
+            h3 Login Events
+            div.history-table
+                table.table.table-hover
+                    thead
+                        tr 
+                            th Event Type
+                            th Target
+                            th  HTML
+                            th  URL
+                            th  Timestamp
+                    tbody
+                        each val in data
+                            tr 
+                                td= val.eventName
+                                td= val.eventType
+                                td= val.html
+                                td= val.url
+                                td= val.timestamp
+
+
+
