@@ -12,7 +12,7 @@ var connection = mysql.createConnection({
     host: 'us-cdbr-iron-east-05.cleardb.net',
     user: 'be697a7df09361',
     password: '4c36d2e7',
-    database: 'dbname'
+    database: 'heroku_517eb00bb3dfef9'
 	}) ;
 
 connection.connect(function(error){

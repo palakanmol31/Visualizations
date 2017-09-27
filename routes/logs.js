@@ -6,7 +6,7 @@ var connection = mysql.createConnection({
 	host: 'localhost',
 	user: 'root',
 	password: '',
-	database:  'dbname'
+	database:  'heroku_517eb00bb3dfef9'
 	}) ;
 
 connection.connect(function(error){
