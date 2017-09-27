@@ -8,7 +8,6 @@ var connection = mysql.createConnection({
 	password: '',
 	database:  'dbname'
 	*/
-    connectionLimit: 200,
     host: 'us-cdbr-iron-east-05.cleardb.net',
     user: 'be697a7df09361',
     password: '4c36d2e7',
