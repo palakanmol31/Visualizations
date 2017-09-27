@@ -6,6 +6,6 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
    // console.log("trying to open this")
     res.sendFile(__dirname + '/index.html');
-}
+});
 
 module.exports = router;
