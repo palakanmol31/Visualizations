@@ -4,8 +4,8 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	console.log("trying to open this")
-  res.render('index', { title: 'Login Form' });
-});
+   // console.log("trying to open this")
+    res.sendFile(__dirname + '/index.html');
+}
 
 module.exports = router;
