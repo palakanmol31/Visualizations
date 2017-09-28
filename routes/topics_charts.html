@@ -2,72 +2,10 @@
 <html>
 <title>User Page</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" />
-<style>
-    .button {
-        background-color: #008CBA;
-        border: none;
-        color: white;
-        padding: 15px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-    }
-    ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background-color: #333;
-    }
-
-    li {
-        float: left;
-    }
-
-    li a, .dropbtn {
-        display: inline-block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-    }
-
-    li a:hover, .dropdown:hover .dropbtn {
-        background-color: red;
-    }
-
-    li.dropdown {
-        display: inline-block;
-    }
-
-    .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 1;
-    }
-
-    .dropdown-content a {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-        text-align: left;
-    }
-
-    .dropdown-content a:hover {background-color: #f1f1f1}
-
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
-</style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js" > </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" > </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -78,7 +16,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         username = $.cookie('current_user');
-        $("#title").text("Welcome " + username + ",");
+        $("#title").text("Welcome " + username);
         cat = [];
         total = [];
         arr = [];
@@ -89,10 +27,13 @@
                     type: 'bar'
             },
             tooltip: {
-                enabled: false
+                enabled: true
             },
             title: {
-                text: 'Most viewed topics'
+                text: 'Most viewed topics by the user'
+            },
+            subtitle:{
+              text: 'Click on any bar to see recommended links for the topic'
             },
             xAxis: {
                 categories: cat
@@ -111,9 +52,7 @@
                     cursor: 'pointer',
                     events: {
                         click: function (event) {
-                          //  console.log(this);
-                           // alert(this.name + " " + event.point.name);
-
+                            use = this.name;
                             $.ajax({
                                 type: "GET",
                                 url: "/users/most_visited_links/" + this.name + "/html/" + event.point.name,
@@ -126,17 +65,32 @@
                                         var li = document.createElement("li");
                                         a.textContent = response[i].url;
                                         a.setAttribute('href', response[i].url);
+                                        a.setAttribute('target', "_blank");
                                         li.appendChild(a);
                                         ul.appendChild(li);
                                     }
                                     // $('#history_table').append(table);
+                                    var div1 = document.getElementById("display_links");
+                                    div1.style.display = "block";
+
+                                    var h1 = document.getElementById("h1");
+                                    var h2 = document.getElementById("h2");
+                                   // alert(use);
+                                    if(use == "Total"){
+                                      //  alert("here");
+                                        h1.style.display = "none";
+                                        h2.style.display = "block";
+                                    }
+                                    else {
+                                        h1.style.display = "block";
+                                        h2.style.display = "none";
+                                    }
                                 },
                                 error: function(response){
                                     console.log("error");
                                     console.log(response);
                                 }
                             });
-
                         }
                     },
                 }
@@ -162,14 +116,10 @@
             type: "GET",
             url: "/users/user_activity/" + username,
             success: function(response) {
-                // arr = [];
-                // cat = [];
-                //total = [];
                 for(var i = 0 ; i < response.length ; i++){
                     cat.push(response[i].html);
                     arr.push([response[i].html , response[i].count]);
-
-                     total.push([response[i].html, response[i].total]);
+                    total.push([response[i].html, response[i].total]);
                 }
                 chart.series[0].setData(arr);
                 chart.series[1].setData(total);
@@ -184,32 +134,41 @@
 
 </script>
 <body>
-<div class="w3-container">
-    <h1 id= "title"></h1>
+<div>
+    <h3 id= "title" style="text-align: center"></h3>
 </div>
-<ul>
-    <li><form action = "/users" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Home </button> </form></li>
-    <li class="dropdown">
-        <a href="javascript:void(0)" class="dropbtn">Graphs</a>
-        <div class="dropdown-content">
-            <form action = "/charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Visualize </button> </form>
-            <form action = "/topics_charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Topics Interested </button> </form>
-            <a href="#">Link 3</a>
-        </div>
-    </li>
-    <li><button class="w3-bar-item w3-button" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button></li>
-    <li><form action = "/viewlogs" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Events </button> </form></li>
-    <li><form action = "/logactions" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Actions Description </button> </form></li>
-    <li><form action = "/logout" method = "POST"> <button class="w3-bar-item w3-button" type ="submit" > Log Out </button> </form></li>
-</ul>
 
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">WebSiteName</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><form action = "/users" method = "GET"> <button class="btn btn-danger navbar-btn" style="background-color: transparent; border-color: transparent" type ="submit" > Home </button> </form></li>
+            <li>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Visualize
+                    <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li> <form action = "/charts" method = "GET"> <button style="border: none; background-color: transparent" type ="submit" > Visualize </button> </form></li>
+                    <li><form action = "/topics_charts" method = "GET"> <button style="background-color: transparent; border: none" type ="submit" > Topics Interested </button> </form> </li>
+                </ul>
+            </li>
+            <li><button class="btn btn-danger navbar-btn" style="background-color: transparent; border-color: transparent" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button></li>
+            <li><form action = "/viewlogs" method = "GET"> <button class="btn btn-danger navbar-btn" style="background-color: transparent; border-color: transparent" type ="submit" > Log Events </button> </form></li>
+            <li><form action = "/logactions" method = "GET"> <button class="btn btn-danger navbar-btn" style="background-color: transparent; border-color: transparent" type ="submit" > Log Actions Description </button> </form></li>
+            <li><form action = "/logout" method = "POST"> <button class="btn btn-danger navbar-btn" style="background-color: transparent; border-color: transparent" type ="submit" > Log Out </button> </form></li>
+        </ul>
+    </div>
+</nav>
 <table>
-    <tr><td>
-        <div id="container" style="width: 450px; height: 400px; margin: 0 auto"></div> </td>
+    <tr>
         <td>
-            <div class="container1"  style="width: 450px; height: 400px; margin: 0; background-color: #dddddd; font-style: normal; font-family: 'American Typewriter'">
-                <h4>Click on any bar on the graph to view most links </h4>
-                <ol id="list" style="background-color: black"> </ol>
+        <div id="container" style="width: 650px; height: 450px; margin: 10px "></div> </td>
+        <td id = "display_links" style="display: none; border: solid" >
+            <div class="container1"  style="width: 450px; height: 300px; margin: 20px; overflow-y: scroll;">
+                <h4 id = "h1" style="display: none"> Links for the topic visited by the user</h4>
+                <h4 id = "h2" style="display: none"> Recommended Links for the topic visited by the user</h4>
+                <ol id="list" style="background-color: white"> </ol>
             </div>
         </td>
         </tr></table>

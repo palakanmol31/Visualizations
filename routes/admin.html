@@ -53,7 +53,7 @@
             data.addColumn('number', 'Minutes');
 
              options = {
-                title: 'Rate the Day on a Scale of 1 to 10',
+                title: 'Number of minutes spend by all the users on a particular day',
                 width: 900,
                 height: 500,
                 hAxis: {
@@ -93,19 +93,6 @@
 
         }
 
-      /*  var button = document.getElementById('change');
-
-        button.onclick = function () {
-
-            // If the format option matches, change it to the new option,
-            // if not, reset it to the original format.
-            options.hAxis.format === 'M/d/yy' ?
-                options.hAxis.format = 'MMM dd, yyyy' :
-                options.hAxis.format = 'M/d/yy';
-
-            chart.draw(data, options);
-        }
-*/
         function drawOnChart(days){
            var data = new google.visualization.DataTable();
             data.addColumn('date', 'Time of Day');
@@ -159,43 +146,47 @@
 </head>
 <body>
 <div class="w3-bar w3-black">
-    <table>
+    <table style="float: right; border: transparent;">
         <td>
             <td>
-                <form action = "/index" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > User Login/SignUp </button> </form></td>
-    <td>  <form action = "/admin" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Admin (Bonus) </button> </form></td></tr>
-    </table>>
+                <form action = "/index" method = "GET"> <button class="btn btn-danger navbar-btn" style="border: rgba(255,255,255,0.91); border-width: 5px; background-color: #00B7FF;" type ="submit" > User Login/SignUp </button> </form></td>
+    <td>  <form action = "/admin" method = "GET"> <button class="btn btn-danger navbar-btn"   type ="submit" > Admin (Bonus) </button> </form></td></tr>
+    </table>
 </div>
+
 <div>
-<form>
-    <label class="radio-inline">
-        <input type="radio" name="optradio" onclick="drawOnChart(7)"> Last 7 Days
-    </label>
-    <label class="radio-inline">
-        <input type="radio" name="optradio" checked = checked  onclick="drawOnChart(30)"> Last 30 Days
-    </label>
-</form><
-    /div>
-<div>
-    <h1 id = "user_type"> </h1>
-    <table>
+    <h1> ADMIN - PANEL ALL USERS SESSION DATA (BONUS)</h1>
+    <table style="border: solid" >
         <tr>
-            <td>
+            <td style="border: solid">
                 Total Unique Users <h4 id = "unique_user"> </h4>
-            </td>
-            <td>
-                Total Time Spent <h4 id = "time_spent"> </h4> <h5> hours </h5>
-            </td>
-            <td>
+                </div>
+<div>
+    Total Time Spent <h4 id = "time_spent"></h4><h5>hours</h5>
+                </div>
+<div>
                 Average Hours Per User <h4 id = "avg_hour"> </h4>
+    </div>
+            </td>
+            <td style="border: solid">
+                <div>
+                <div>
+                    <br>
+                    <br>
+                    <form>
+                        <label class="radio-inline">
+                            <input type="radio" name="optradio" onclick="drawOnChart(7)"> Last 7 Days
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="optradio" checked = checked  onclick="drawOnChart(30)"> Last 30 Days
+                        </label>
+                    </form>
+                </div>
+                <div id="chart_div"></div>
+                </div>
             </td>
         </tr>
     </table>
 </div>
-
-<button id="change">Click to change the format</button>
-<div id="chart_div"></div>
-
-
 </body>
 </html>

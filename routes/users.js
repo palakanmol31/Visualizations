@@ -29,7 +29,7 @@
             var current_username = req.session.username;
 
 
-            connection.query("select date from login_history where username = '" + current_username + "' order by date DESC LIMIT 10; ", function (error, rows) {
+            connection.query("select date from login_history where username = '" + current_username + "' order by date DESC LIMIT 15; ", function (error, rows) {
                 if (rows.length < 1) {
                     console.log('There is no data');
 
@@ -55,7 +55,7 @@
             username = req.params.username;
             var current_username = req.session.username;
 
-            var que = "select distinct(html), count(*) as count from logs where name = '" + current_username + "' and html != '' and html != '×' and eventName = 'post-tag'  group by html order by count DESC LIMIT 5;";
+            var que = "select distinct(html), count(*) as count from logs where name = '" + current_username + "' and html != '' and html != '×' and eventName = 'post-tag'  group by html order by count DESC LIMIT 10;";
             connection.query(que, function (error, rows) {
                 if(err){
                     console.log("error in connecting with db");
@@ -147,7 +147,7 @@
             username = req.params.username;
             var current_username = req.session.username;
 
-            var que = "select distinct(url), count(*) as count from logs where name = '" + current_username + "' group by url order by count DESC LIMIT 5;"
+            var que = "select distinct(url), count(*) as count from logs where name = '" + current_username + "' group by url order by count DESC LIMIT 8;"
 
             connection.query(que, function (error, rows) {
                 if (rows.length < 1) {

@@ -2,7 +2,9 @@
 		<html>
 		<title>Visualize</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 		<style>
 			.button {
@@ -13,59 +15,9 @@
 				text-align: center;
 				text-decoration: none;
 				display: inline-block;
-				font-size: 16px;
+				font-size: 14px;
 				margin: 4px 2px;
 				cursor: pointer;
-			}
-			ul {
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-				overflow: hidden;
-				background-color: #333;
-			}
-
-			li {
-				float: left;
-			}
-
-			li a, .dropbtn {
-				display: inline-block;
-				color: white;
-				text-align: center;
-				padding: 14px 16px;
-				text-decoration: none;
-			}
-
-			li a:hover, .dropdown:hover .dropbtn {
-				background-color: red;
-			}
-
-			li.dropdown {
-				display: inline-block;
-			}
-
-			.dropdown-content {
-				display: none;
-				position: absolute;
-				background-color: #f9f9f9;
-				min-width: 160px;
-				box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-				z-index: 1;
-			}
-
-			.dropdown-content a {
-				color: black;
-				padding: 12px 16px;
-				text-decoration: none;
-				display: block;
-				text-align: left;
-			}
-
-			.dropdown-content a:hover {background-color: #f1f1f1}
-
-			.dropdown:hover .dropdown-content {
-				display: block;
 			}
 		</style>
 		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -76,14 +28,14 @@
 
 		$(document).ready(function () {
 			username = $.cookie('current_user');
-			$("#title").text("Welcome " + username + ",");
+			$("#title").text("Welcome " + username);
 
 			time_chart = Highcharts.chart('time_chart', {
 			chart: {
 				zoomType: 'x'
 			},
 			title: {
-				text: 'Event clicked by a user over a span of time'
+				text: 'User Events over a span of time'
 			},
 			subtitle: {
 				text: document.ontouchstart === undefined ?
@@ -93,9 +45,7 @@
 				type: 'datetime',
 				title: {
 					text: 'Date'
-				}//,
-				//min: null,
-				//max: null
+				}
 			},
 			yAxis: {
 				type: 'linear',
@@ -113,22 +63,17 @@
 			},
 			series: [{
 				type: '',
-				name: 'aaa',
+				name: username,
 				data: []
 			},
 			{
 				type: '',
-				name: 'bbb',
+				name: 'average',
 				data: []
-			},
-			{
-				type: '',
-				name: 'ccc',
-				data: []
-			}]
+			}
+			]
 		});
 	});
-
 
 		function request_time_chart_data(){
 			console.log("in button click");
@@ -137,7 +82,6 @@
 			var event = document.getElementById('dropdown_event_name').value;
 			var graphType =  $("input:radio[name=radio-1]:checked").val();
 
-			console.log(startDate  + "  " + endDate + " " + event + " " + graphType);
 			$.ajax({
 				type: "GET",
 				data: {"start": startDate , "end": endDate , "event": event},
@@ -150,19 +94,20 @@
 					});
 					time_chart.series[0].update({type: graphType});
 					time_chart.series[1].update({type: graphType});
-					time_chart.series[2].update({type: graphType});
-					converted_response_a = time_chart_response(response , "aaa");
+					//time_chart.series[2].update({type: graphType});
+					converted_response_a = time_chart_response(response , username );
 						time_chart.series[0].setData(
 							converted_response_a
 							);
-					converted_response_b = time_chart_response(response , "bbb");
+					converted_response_b = total_response(response);
 						time_chart.series[1].setData(
 						converted_response_b
 						);
-					converted_response_c = time_chart_response(response , "ccc");
+				/*	converted_response_c = time_chart_response(response , "ccc");
 						time_chart.series[2].setData(
 						converted_response_c
 					);
+					*/
 				},
 				error: function(response){
 					console.log("error");
@@ -194,6 +139,29 @@
 			}
 			return arr;
 		}
+
+        function total_response(response){
+            var map = {};
+            var arr = [];
+            for(var i = 0  ; i < response.length ; i++){
+                console.log(response[i].date);
+                    if(map[response[i].date] == null || map[response[i].date] == "" || map[response[i].date] == "NaN")
+                        map[response[i].date] = 1;
+                    else
+                        map[response[i].date] += 1;
+            }
+
+            for(var key in map){
+                var date = new Date(key);
+                var d = date.getDate();
+                var m = date.getMonth();
+                var y = date.getYear() + 1900;
+                var utc = Date.UTC(y,m,d);
+                console.log(d + " " + m +" "+ y + " " + utc);
+                arr.push([utc,map[key]/3]);
+            }
+            return arr;
+        }
 
 		$( function() {
 			var dateFormat = "mm-dd-yy",
@@ -240,8 +208,6 @@
 				url: "/dropdown_events",
 				dataType: "json",
 				success: function(response) {
-					//console.log("response is");
-					//console.log(response);
 					dropdown_values = response ;
 					console.log(dropdown_values);
 
@@ -258,57 +224,40 @@
 		</script>
 		</head>
 		<body>
-		<div class="w3-container">
-			<h1 id= "title"></h1>
+		<div>
+			<h3 id= "title" style="text-align: center"></h3>
 		</div>
-		<!--
-		<div class="w3-bar w3-black">
-		  <form action = "/users" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Home </button> </form>
-		  <form action = "/charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Visualize </button> </form>
-		  <button class="w3-bar-item w3-button" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button>
-		  <form action = "/viewlogs" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Events </button> </form>
-		  <form action = "/logactions" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Actions Description </button> </form>
-		  <form action = "/logout" method = "POST"> <button class="w3-bar-item w3-button" type ="submit" > Log Out </button> </form>
-		</div>
--->
 
-		<ul>
-			<li><form action = "/users" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Home </button> </form></li>
-			<li class="dropdown">
-			<a href="javascript:void(0)" class="dropbtn">Graphs</a>
-			<div class="dropdown-content">
-				<form action = "/charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Visualize </button> </form>
-				<form action = "/topics_charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Topics Interested </button> </form>
-				<a href="#">Link 3</a>
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">WebSiteName</a>
+				</div>
+				<ul class="nav navbar-nav">
+					<li class="active"><form action = "/users" method = "GET"> <button class="btn btn-danger navbar-btn" style="background-color: transparent; border-color: transparent" type ="submit" > Home </button> </form></li>
+					<li>
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Visualize
+							<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li> <form action = "/charts" method = "GET"> <button style="border: none; background-color: transparent" type ="submit" > Visualize </button> </form></li>
+							<li><form action = "/topics_charts" method = "GET"> <button style="background-color: transparent; border: none" type ="submit" > Topics Interested </button> </form> </li>
+						</ul>
+					</li>
+					<li><button class="btn btn-danger navbar-btn" style="background-color: transparent; border-color: transparent" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button></li>
+					<li><form action = "/viewlogs" method = "GET"> <button class="btn btn-danger navbar-btn" style="background-color: transparent; border-color: transparent" type ="submit" > Log Events </button> </form></li>
+					<li><form action = "/logactions" method = "GET"> <button class="btn btn-danger navbar-btn" style="background-color: transparent; border-color: transparent" type ="submit" > Log Actions Description </button> </form></li>
+					<li><form action = "/logout" method = "POST"> <button class="btn btn-danger navbar-btn" style="background-color: transparent; border-color: transparent" type ="submit" > Log Out </button> </form
+				</ul>
 			</div>
-		</li>
-			<li><button class="w3-bar-item w3-button" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button></li>
-			<li><form action = "/viewlogs" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Events </button> </form></li>
-			<li><form action = "/logactions" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Actions Description </button> </form></li>
-			<li><form action = "/logout" method = "POST"> <button class="w3-bar-item w3-button" type ="submit" > Log Out </button> </form></li>
-		</ul>
-
-		<table>
+		</nav>
+		<table style="border: solid; margin-left: 5px; margin-right: 10px">
 			<tr>
-				<td width= "30%">
-					<label for="from">Start Date</label>
-					<input type="text" id="from" name="from">
-					<label for="to">End Date</label>
-					<input type="text" id="to" name="to">
-
+				<td width= "30%" style="border: solid; min-width: 100px ; text-align: center">
+					<h4 style = "text-align: center"> Make changes below to observe patterns between events for the user</h4>
 					<br>
+					<input type="text" id="from" name="from" placeholder="Start Date">
 					<br>
-
-					<fieldset>
-						<legend>Select a graph: </legend>
-						<label for="radio-1">Line Chart</label>
-						<input type="radio" name="radio-1" id="radio-1" value= "line">
-						<label for="radio-2">Bar Graph</label>
-						<input type="radio" name="radio-1" id="radio-2" value= "bar">
-						<label for="radio-3">Spline Chart</label>
-						<input type="radio" name="radio-1" id="radio-3" value= "spline">
-					</fieldset>
-
+					<input type="text" id="to" name="to" placeholder="End Date">
 					<br>
 					<br>
 
@@ -323,22 +272,24 @@
 					<br>
 					<br>
 
-					<input id="button" class= "button" type="button" value="Apply Changes For Graph" onclick="request_time_chart_data()">
+					<fieldset>
+						<legend>Graph Type : </legend>
+						<label for="radio-1">Line Chart  </label>
+						<input type="radio" name="radio-1" id="radio-1" value= "line" checked = checked>
+						<label for="radio-2">   Bar Graph</label>
+						<input type="radio" name="radio-1" id="radio-2" value= "bar">
+					</fieldset>
+
+					<br>
+					<br>
+
+
+					<input id="button" class= "button" type="button" value="Apply Changes" onclick="request_time_chart_data()">
 				</td>
-				<td>
-					<div id="time_chart" style="width:100%; height:400px;"></div>
+				<td width = "60%" style="border: solid">
+					<div id="time_chart" style="width:100%; height:500px;"></div>
 				</td>
 		</tr>
-		</table>
-		<table>
-			<tr>
-				<td>
-					<div id="container" style="width:100%; height:400px;"></div>
-				</td>
-				<td>
-		<div id="piec" style="width:100%; height:400px;"></div></td>
-
-			</tr>
 		</table>
 		</body>
 		</html>

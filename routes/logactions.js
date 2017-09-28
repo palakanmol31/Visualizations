@@ -3,8 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	var current_username = req.session.username ; 
-  res.render('logactions', { title: current_username } );
+    res.sendFile(__dirname + '/logactions.html');
 });
 
 module.exports = router;
