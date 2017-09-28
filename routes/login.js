@@ -29,7 +29,7 @@ router.post('/', function(req, res) {
 
     mysql_pool.getConnection(function (err, connection) {
         if (err) {
-            connection.release();
+          //  connection.release();
             console.log(' Error getting mysql_pool connection: ' + err);
             throw err;
         }
@@ -49,13 +49,17 @@ router.post('/', function(req, res) {
                 //console.log(rows[0]);
                 console.log("Login should be successful now");
 
+                var id = req.sessionID;
+                req.session.sessionID = id;
+                console.log("session id :" + id);
                 req.session.username = req.body.username;
                 res.cookie('current_user', req.body.username);
-                connection.query("insert into login_history(username, date) values ( '" + req.session.username + "' ,  CURRENT_TIMESTAMP )");
+                res.cookie('session_id', id);
+                connection.query("insert into login_history(username, date, log_out, session_id) values ( '" + req.session.username + "' ,  CURRENT_TIMESTAMP , CURRENT_TIMESTAMP + INTERVAL 15 MINUTE ,'" + id +"');");
                 res.redirect('/users');
             }
-            connection.release();
         });
+        connection.release();
     });
 });
 //connection.end ;

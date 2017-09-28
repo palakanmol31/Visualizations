@@ -1,477 +1,344 @@
-	<!DOCTYPE html>
-	<html>
-	<title>Visualize</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-	<script src="https://code.highcharts.com/highcharts.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-	<script type="text/javascript">
-
-    var myChart1,myChart,map1={},obj2=[]   ;
-                    var countObj;
-                    var obj;
-var category = [] ;
-	$(document).ready(function () {
-		username = $.cookie('current_user');
-        $("#title").text("Welcome " + username + ",");
-
-		time_chart = Highcharts.chart('time_chart', {
-        chart: {
-            zoomType: 'x'
-        },
-        title: {
-            text: 'Event clicked by a user over a span of time'
-        },
-        subtitle: {
-            text: document.ontouchstart === undefined ?
-                    'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
-        },
-        xAxis: {
-            type: 'datetime',
-            title: {
-            	text: 'Date'
-            }//,
-            //min: null,
-            //max: null 
-        },
-        yAxis: {
-        	type: 'linear',
-            title: {
-                text: 'Number of Clicks'
-            }
-        },
-        legend: {
-            enabled: false,
-            align: 'right',
-            verticalAlign: 'top',
-            layout: 'vertical',
-            floating: true,
-            backgroundColor: '#FFFFFF'
-        },
-        series: [{
-            type: '',
-            name: 'aaa',
-            data: []
-        },
-        {
-            type: '',
-            name: 'bbb',
-            data: []
-        },
-        {
-            type: '',
-            name: 'ccc',
-            data: []
-        }]
-    });
-});
-	
-
-	function request_time_chart_data(){
-		console.log("in button click");
-		var startDate = document.getElementById('from').value;
-		var endDate = document.getElementById('to').value;
-		var event = document.getElementById('dropdown_event_name').value;
-		var graphType =  $("input:radio[name=radio-1]:checked").val();
-
-		console.log(startDate  + "  " + endDate + " " + event + " " + graphType);
-		$.ajax({
-			type: "GET", 
-			data: {"start": startDate , "end": endDate , "event": event},
-			url: "/time_chart", 
-			success: function(response) { 
-				console.log("to get response");
-				console.log(response);
-				time_chart.legend.update({
-                    enabled:true
-				});
-				time_chart.series[0].update({type: graphType});
-				time_chart.series[1].update({type: graphType});
-				time_chart.series[2].update({type: graphType});
-				converted_response_a = time_chart_response(response , "aaa");
-					time_chart.series[0].setData(
-						converted_response_a
-						);
-				converted_response_b = time_chart_response(response , "bbb");
-					time_chart.series[1].setData(
-					converted_response_b
-					);
-				converted_response_c = time_chart_response(response , "ccc");
-					time_chart.series[2].setData(
-					converted_response_c
-				);	
-			},
-			error: function(response){
-				console.log("error");
-				console.log(response);
+		<!DOCTYPE html>
+		<html>
+		<title>Visualize</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<style>
+			.button {
+				background-color: #008CBA;
+				border: none;
+				color: white;
+				padding: 15px 32px;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				font-size: 16px;
+				margin: 4px 2px;
+				cursor: pointer;
 			}
+			ul {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				background-color: #333;
+			}
+
+			li {
+				float: left;
+			}
+
+			li a, .dropbtn {
+				display: inline-block;
+				color: white;
+				text-align: center;
+				padding: 14px 16px;
+				text-decoration: none;
+			}
+
+			li a:hover, .dropdown:hover .dropbtn {
+				background-color: red;
+			}
+
+			li.dropdown {
+				display: inline-block;
+			}
+
+			.dropdown-content {
+				display: none;
+				position: absolute;
+				background-color: #f9f9f9;
+				min-width: 160px;
+				box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+				z-index: 1;
+			}
+
+			.dropdown-content a {
+				color: black;
+				padding: 12px 16px;
+				text-decoration: none;
+				display: block;
+				text-align: left;
+			}
+
+			.dropdown-content a:hover {background-color: #f1f1f1}
+
+			.dropdown:hover .dropdown-content {
+				display: block;
+			}
+		</style>
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+		<script type="text/javascript">
+
+		$(document).ready(function () {
+			username = $.cookie('current_user');
+			$("#title").text("Welcome " + username + ",");
+
+			time_chart = Highcharts.chart('time_chart', {
+			chart: {
+				zoomType: 'x'
+			},
+			title: {
+				text: 'Event clicked by a user over a span of time'
+			},
+			subtitle: {
+				text: document.ontouchstart === undefined ?
+						'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+			},
+			xAxis: {
+				type: 'datetime',
+				title: {
+					text: 'Date'
+				}//,
+				//min: null,
+				//max: null
+			},
+			yAxis: {
+				type: 'linear',
+				title: {
+					text: 'Number of Clicks'
+				}
+			},
+			legend: {
+				enabled: false,
+				align: 'right',
+				verticalAlign: 'top',
+				layout: 'vertical',
+				floating: true,
+				backgroundColor: '#FFFFFF'
+			},
+			series: [{
+				type: '',
+				name: 'aaa',
+				data: []
+			},
+			{
+				type: '',
+				name: 'bbb',
+				data: []
+			},
+			{
+				type: '',
+				name: 'ccc',
+				data: []
+			}]
 		});
-	}
-	function time_chart_response(response, name){
-		var map = {};
-		var arr = [];
-		for(var i = 0  ; i < response.length ; i++){
-			console.log(response[i].date);
-			if(response[i].name == name){
-			if(map[response[i].date] == null || map[response[i].date] == "" || map[response[i].date] == "NaN")
-				map[response[i].date] = 1;
-			else
-				map[response[i].date] += 1;
+	});
+
+
+		function request_time_chart_data(){
+			console.log("in button click");
+			var startDate = document.getElementById('from').value;
+			var endDate = document.getElementById('to').value;
+			var event = document.getElementById('dropdown_event_name').value;
+			var graphType =  $("input:radio[name=radio-1]:checked").val();
+
+			console.log(startDate  + "  " + endDate + " " + event + " " + graphType);
+			$.ajax({
+				type: "GET",
+				data: {"start": startDate , "end": endDate , "event": event},
+				url: "/time_chart",
+				success: function(response) {
+					console.log("to get response");
+					console.log(response);
+					time_chart.legend.update({
+						enabled:true
+					});
+					time_chart.series[0].update({type: graphType});
+					time_chart.series[1].update({type: graphType});
+					time_chart.series[2].update({type: graphType});
+					converted_response_a = time_chart_response(response , "aaa");
+						time_chart.series[0].setData(
+							converted_response_a
+							);
+					converted_response_b = time_chart_response(response , "bbb");
+						time_chart.series[1].setData(
+						converted_response_b
+						);
+					converted_response_c = time_chart_response(response , "ccc");
+						time_chart.series[2].setData(
+						converted_response_c
+					);
+				},
+				error: function(response){
+					console.log("error");
+					console.log(response);
+				}
+			});
 		}
+		function time_chart_response(response, name){
+			var map = {};
+			var arr = [];
+			for(var i = 0  ; i < response.length ; i++){
+				console.log(response[i].date);
+				if(response[i].name == name){
+				if(map[response[i].date] == null || map[response[i].date] == "" || map[response[i].date] == "NaN")
+					map[response[i].date] = 1;
+				else
+					map[response[i].date] += 1;
+			}
+			}
+
+			for(var key in map){
+				var date = new Date(key);
+				var d = date.getDate();
+				var m = date.getMonth();
+				var y = date.getYear() + 1900;
+				var utc = Date.UTC(y,m,d);
+				console.log(d + " " + m +" "+ y + " " + utc);
+				arr.push([utc,map[key]]);
+			}
+			return arr;
 		}
 
-		for(var key in map){
-			var date = new Date(key);
-			var d = date.getDate();
-			var m = date.getMonth();
-			var y = date.getYear() + 1900;
-			var utc = Date.UTC(y,m,d);
-			console.log(d + " " + m +" "+ y + " " + utc);
-			arr.push([utc,map[key]]);
+		$( function() {
+			var dateFormat = "mm-dd-yy",
+			  from = $( "#from" )
+				.datepicker({
+				  defaultDate: "-1w",
+				  changeMonth: true,
+				  numberOfMonths: 1
+				})
+				.on( "change", function() {
+				  to.datepicker( "option", "minDate", getDate( this ) );
+				}),
+			  to = $( "#to" ).datepicker({
+				defaultDate: "+0D",
+				changeMonth: true,
+				numberOfMonths: 1
+			  })
+			  .on( "change", function() {
+				from.datepicker( "option", "maxDate", getDate( this ) );
+			  });
+
+			function getDate( element ) {
+			  var date;
+			  try {
+				date = $.datepicker.parseDate( dateFormat, element.value );
+			  } catch( error ) {
+				date = null;
+			  }
+
+			  return date;
+			}
+		  } );
+
+		$( function() {
+			$( "input" ).checkboxradio();
+			$( "fieldset" ).controlgroup();
+		  });
+
+		function addValuesToUserDropDown(){
+			var dropdown_values= {} ;
+
+			$.ajax({
+				type: "GET",
+				url: "/dropdown_events",
+				dataType: "json",
+				success: function(response) {
+					//console.log("response is");
+					//console.log(response);
+					dropdown_values = response ;
+					console.log(dropdown_values);
+
+					var select = document.getElementById("dropdown_event_name");
+					$(select).empty();
+					for(var i = 0; i < dropdown_values.length; i++) {
+						var option = document.createElement("option");
+						option.text = dropdown_values[i].eventName;
+						if(option.text != '')
+							select.add(option);
+				}}});
 		}
-		return arr;
-	}
 
-	$( function() {
-	    var dateFormat = "mm-dd-yy",
-	      from = $( "#from" )
-	        .datepicker({
-	          defaultDate: "-1w",
-	          changeMonth: true,
-	          numberOfMonths: 1
-	        })
-	        .on( "change", function() {
-	          to.datepicker( "option", "minDate", getDate( this ) );
-	        }),
-	      to = $( "#to" ).datepicker({
-	        defaultDate: "+0D",
-	        changeMonth: true,
-	        numberOfMonths: 1
-	      })
-	      .on( "change", function() {
-	        from.datepicker( "option", "maxDate", getDate( this ) );
-	      });
-	 
-	    function getDate( element ) {
-	      var date;
-	      try {
-	        date = $.datepicker.parseDate( dateFormat, element.value );
-	      } catch( error ) {
-	        date = null;
-	      }
-	 
-	      return date;
-	    }
-	  } );
+		</script>
+		</head>
+		<body>
+		<div class="w3-container">
+			<h1 id= "title"></h1>
+		</div>
+		<!--
+		<div class="w3-bar w3-black">
+		  <form action = "/users" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Home </button> </form>
+		  <form action = "/charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Visualize </button> </form>
+		  <button class="w3-bar-item w3-button" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button>
+		  <form action = "/viewlogs" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Events </button> </form>
+		  <form action = "/logactions" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Actions Description </button> </form>
+		  <form action = "/logout" method = "POST"> <button class="w3-bar-item w3-button" type ="submit" > Log Out </button> </form>
+		</div>
+-->
 
-	$( function() {
-	    $( "input" ).checkboxradio();
-	    $( "fieldset" ).controlgroup();
-	  });
+		<ul>
+			<li><form action = "/users" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Home </button> </form></li>
+			<li class="dropdown">
+			<a href="javascript:void(0)" class="dropbtn">Graphs</a>
+			<div class="dropdown-content">
+				<form action = "/charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Visualize </button> </form>
+				<form action = "/topics_charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Topics Interested </button> </form>
+				<a href="#">Link 3</a>
+			</div>
+		</li>
+			<li><button class="w3-bar-item w3-button" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button></li>
+			<li><form action = "/viewlogs" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Events </button> </form></li>
+			<li><form action = "/logactions" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Actions Description </button> </form></li>
+			<li><form action = "/logout" method = "POST"> <button class="w3-bar-item w3-button" type ="submit" > Log Out </button> </form></li>
+		</ul>
 
-	function addValuesToUserDropDown(){
-		var dropdown_values= {} ;
+		<table>
+			<tr>
+				<td width= "30%">
+					<label for="from">Start Date</label>
+					<input type="text" id="from" name="from">
+					<label for="to">End Date</label>
+					<input type="text" id="to" name="to">
 
-		$.ajax({
-			type: "GET", 
-			url: "/dropdown_events", 
-			dataType: "json",
-			success: function(response) { 
-				//console.log("response is");
-				//console.log(response);
-				dropdown_values = response ; 
-				console.log(dropdown_values);
+					<br>
+					<br>
 
-				var select = document.getElementById("dropdown_event_name"); 
-				$(select).empty();
-				for(var i = 0; i < dropdown_values.length; i++) {
-					var option = document.createElement("option");
-					option.text = dropdown_values[i].eventName;
-					if(option.text != '')
-						select.add(option);
-			}}});
-	}
+					<fieldset>
+						<legend>Select a graph: </legend>
+						<label for="radio-1">Line Chart</label>
+						<input type="radio" name="radio-1" id="radio-1" value= "line">
+						<label for="radio-2">Bar Graph</label>
+						<input type="radio" name="radio-1" id="radio-2" value= "bar">
+						<label for="radio-3">Spline Chart</label>
+						<input type="radio" name="radio-1" id="radio-3" value= "spline">
+					</fieldset>
 
-    //bar graph and pie chart
-    $(document).ready(function () {
-        barchart = Highcharts.chart('container', {
-            chart: {
-                type: 'column'
-            },
-            plotOptions: {
-                column: {
-                    colorByPoint: true
-                },
-                series:{
-                    cursor:'pointer',
-                    point:{
-                        events:{
-                            mouseOver: function(){
-                                obj2=[];
-                                var map1={};
-                                for(i=0;i<obj.length;i++){
-                                    if(obj[i].name==this.name){
-                                        if(map1[obj[i].eventName]==""||map1[obj[i].eventName]===NaN||map1[obj[i].eventName]==null) {
-                                            map1[obj[i].eventName]=1;
-                                        }
-                                        else{
-                                            map1[obj[i].eventName]=map1[obj[i].eventName]+1;
-                                        }
-                                    }
-                                }
-                                for(var key in map1){
-                                    obj2.push([key,map1[key]]);
-                                }
-                                piechart.setTitle({text:"distribution of events made by user "+this.name})
-                                piechart.series[0].setData(obj2);
-                                console.log(this.y+" "+this.name);
-                            }
-                        }
-                    }
-                }
-            },
-            xAxis: {
-                categories: category
-            },
-            yAxis: {
-                title: {
-                    text: 'events logged'
-                }
-            },
-            colors: ['#7cb5ec', '#434348','#a6c96a'],
-            series: [{
-                name: 'user',
-                data: [123,123,13]
-            }]
-        });
-    });
-    $(function () {
-        piechart = Highcharts.chart('piec', {
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie'
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.y}</b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: true,
-                        format: '<b>{point.name}</b>: {point.y}',
-                        style: {
-                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-                        }
-                    }
-                },
-                series:{
-                    cursor:'pointer',
-                    point:{
-                        events:{
-                            mouseOver: function(){
-                                var map={};
-                                var obj1=[];
-                                console.log(this.name+" "+this.y);
-                                for(var i=0;i<obj.length;i++){
-                                    if(this.name==obj[i].eventName){
-                                        if(map[obj[i]+" "+obj[i].name]==""||map[this.name+" "+obj[i].name]===NaN||map[this.name+" "+obj[i].name]==null)
-                                        {
-                                            if(this.name)
-                                                map[this.name+" "+obj[i].name]=1;
-                                        }
-                                        else
-                                            map[this.name+" "+obj[i].name]=map[this.name+" "+obj[i].name]+1;
-                                    }
-                                }
-                                for(var key in map){
-                                    obj1.push([key,map[key]]);
-                                    category.push(key);
-                                }
-                                // alert(obj1);
-                                barchart.setTitle({text:"number of logs for event:  "+this.name});
-                                barchart.series[0].setData(obj1);
-                            },
-                            mouseOut:function(){
-                                var map = {};
-                                var obj1=[];
-                                for(i=0;i<obj.length;i++){
-                                    if(map[obj[i].name]==""||map[obj[i].name]===NaN||map[obj[i].name]==null) {
-                                        map[obj[i].name]=1;
-                                    }
-                                    else{
-                                        map[obj[i].name]=map[obj[i].name]+1;
-                                    }
-                                }
-                                for(var key in map){
-                                    obj1.push([key,map[key]]);
-                                    category.push(key);
-                                }
-                                //  alert(obj1);
-                                barchart.series[0].setData(obj1);
-                            }
-                        }
-                    }
-                }
-            },
-            series: [{
-                name: 'events',
-                colorByPoint: true,
-                data: []
-            }]
-        });
-    });
+					<br>
+					<br>
 
 
+					<fieldset>
+						<label>Select the type of event: </label>
+						<select id="dropdown_event_name" onclick="addValuesToUserDropDown()">
+							<option selected="selected">select</option>
+						</select>
+					</fieldset>
 
-    $(document).ready(function(){
+					<br>
+					<br>
 
-        $.ajax({
-
-            type: "GET",
-            url: "/logs",
-            // dataType: "json",     // change
-            success: function(response) {
-                obj=response;
-                console.log(response);
-                //alert(obj['eventType']);
-                //myChart.setDataSource(data); //change // output 100
-                totalCount(response);}}
-        );
-    });
-
-
-    function totalCount(response){
-        var arr={};
-        var map = {};
-        var obj1=[];
-        //    alert(map[obj[0].username]);
-
-        for(i=0;i<obj.length;i++){
-            //  alert(item.username);
-
-            if(map[obj[i].name]==""||map[obj[i].name]===NaN||map[obj[i].name]==null)
-            {
-                map[obj[i].name]=1;
-            }
-            else{
-                map[obj[i].name]=map[obj[i].name]+1;
-            }
-        }
-        for(var key in map){
-            obj1.push([key,map[key]]);
-            category.push(key);
-        }
-
-        for(i=0;i<obj.length;i++){
-
-            //  alert(item.username);
-            if(obj[i].name=='aaa'){
-                if(map1[obj[i].eventName]==""||map1[obj[i].eventName]===NaN||map1[obj[i].eventName]==null)
-                {
-                    map1[obj[i].eventName]=1;
-                }
-                else{
-                    map1[obj[i].eventName]=map1[obj[i].eventName]+1;
-                }
-            }
-        }
-        for(var key in map1){
-            // alert('key is :' + key + ' and value is : '+ map[key])
-            obj2.push([key,map1[key]]);
-        }
-        piechart.series[0].setData(obj2);
-      //  alert(obj1);
-        barchart.setTitle({text:"Total events by all users"});
-        barchart.series[0].setData(obj1);
-        addValuesToUserDropDown1(obj1);
-    }
-
-    function addValuesToUserDropDown1(val){
-                        var obj1=val;
-                        var select1 = document.getElementById("user"); 
-
-                    for(var i = 0; i < obj1.length; i++) {
-                        var option = document.createElement("option");
-                        option.text = obj1[i][0];
-                        select1.add(option);
-                        }
-
-                    }
-
-	</script>
-	</head>
-	<body>
-    <div class="w3-container">
-        <h1 id= "title"></h1>
-    </div>
-	<div class="w3-bar w3-gray">
-	  <form action = "/users" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Home </button> </form>
-	  <form action = "/charts" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Visualize </button> </form>
-	  <button class="w3-bar-item w3-button" onclick=" window.open('https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15','_blank')"> Stack Overflow</button>
-	  <form action = "/viewlogs" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Events </button> </form> 
-	  <form action = "/logactions" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Log Actions Description </button> </form>
-	  <form action = "/logout" method = "POST"> <button class="w3-bar-item w3-button" type ="submit" > Log Out </button> </form>
-	</div>
-	<table>
-		<tr>
-			<td width= "30%">
-				<label for="from">Start Date</label>
-				<input type="text" id="from" name="from">
-				<br>
-				<label for="to">End Date</label>
-				<input type="text" id="to" name="to">
-
-				<br>
-				<br>
-
-				<fieldset>
-					<legend>Select a graph: </legend>
-					<label for="radio-1">Line Chart</label>
-					<input type="radio" name="radio-1" id="radio-1" value= "line">
-					<label for="radio-2">Bar Graph</label>
-					<input type="radio" name="radio-1" id="radio-2" value= "bar">
-					<label for="radio-3">Column Chart</label>
-					<input type="radio" name="radio-1" id="radio-3" value= "column">
-				</fieldset>
-
-				<br>
-				<br>
-
-
-				<fieldset>
-					<label>Select the type of event: </label>
-					<select id="dropdown_event_name" onclick="addValuesToUserDropDown()">
-						<option selected="selected">select</option>
-					</select>
-				</fieldset>
-
-				<br>
-				<br>
-
-				<center><input id="button" type="button" value="Update" onclick="request_time_chart_data()"></center>
-			</td>
-			<td>
-				<div id="time_chart" style="width:100%; height:400px;"></div>
-			</td>
-	</tr>
-	</table>
-	<table>
-		<tr> 
-			<td>
-				<div id="container" style="width:100%; height:400px;"></div>
-			</td>
-			<td>
-	<div id="piec" style="width:100%; height:400px;"></div></td>
-	
+					<input id="button" class= "button" type="button" value="Apply Changes For Graph" onclick="request_time_chart_data()">
+				</td>
+				<td>
+					<div id="time_chart" style="width:100%; height:400px;"></div>
+				</td>
 		</tr>
-	</table>
-	</body>
-	</html>
+		</table>
+		<table>
+			<tr>
+				<td>
+					<div id="container" style="width:100%; height:400px;"></div>
+				</td>
+				<td>
+		<div id="piec" style="width:100%; height:400px;"></div></td>
+
+			</tr>
+		</table>
+		</body>
+		</html>

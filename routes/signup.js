@@ -24,7 +24,7 @@ router.post('/', function(req, res) {
 
     mysql_pool.getConnection(function (err, connection) {
         if (err) {
-            connection.release();
+          //  connection.release();
             console.log(' Error getting mysql_pool connection: ' + err);
             throw err;
         }
@@ -47,9 +47,8 @@ router.post('/', function(req, res) {
                 result = "User already exists. Please try logging in."
                 res.render('index', {result: result});
             }
-
-            connection.release();
         });
+        connection.release();
     });
 });
 //connection.end ;

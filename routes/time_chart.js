@@ -37,7 +37,7 @@ router.get('/', function(req, res, next) {
 
     mysql_pool.getConnection(function (err, connection) {
         if (err) {
-            connection.release();
+           // connection.release();
             console.log(' Error getting mysql_pool connection: ' + err);
             throw err;
         }
@@ -58,8 +58,9 @@ router.get('/', function(req, res, next) {
                 //console.log(rows);
                 res.json(rows);
             }
-            connection.release();
+
         });
+        connection.release();
     });
 });
 

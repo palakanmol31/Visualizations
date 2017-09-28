@@ -18,7 +18,9 @@ var charts = require('./routes/charts');
 var dropdown_events = require('./routes/dropdown_events');
 var time_chart = require('./routes/time_chart');
 var logs = require('./routes/logs');
-
+var topic_charts = require('./routes/topics_charts');
+var total_events = require('./routes/total_events');
+var admin  = require('./routes/admin');
 var app = express();
 
 // view engine setup
@@ -51,6 +53,9 @@ app.use('/charts', charts);
 app.use('/dropdown_events', dropdown_events);
 app.use('/time_chart', time_chart);
 app.use('/logs', logs);
+app.use('/topics_charts', topic_charts);
+app.use('/total_events', total_events);
+app.use('/admin', admin);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

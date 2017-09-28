@@ -28,7 +28,7 @@ var mysql_pool = mysql.createPool({
 router.post('/', function(req, res) {
     mysql_pool.getConnection(function (err, connection) {
         if (err) {
-            connection.release();
+          //  connection.release();
             console.log(' Error getting mysql_pool connection: ' + err);
             throw err;
         }
@@ -39,6 +39,10 @@ router.post('/', function(req, res) {
         var eventName = req.body.eventClassList;
         var eventType = req.body.eventType;
         var username = req.body.currentUser;
+        var id = req.body.session;
+
+        console.log("session id" + id);
+
         connection.query("insert into logs ( name, eventName, eventType , url, html, timestamp) values ( '" + username + "' , '" + eventName + "' , '" + eventType + "' ,  '" + url + "', '" + html + "' , CURRENT_TIMESTAMP )");
         res.send(200);
     connection.release();

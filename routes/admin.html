@@ -1,0 +1,201 @@
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js" > </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" > </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                type: "GET",
+                url: "/admin/total_unique_users" ,
+                success: function(response) {
+                  $("#unique_user").text(response[0].count);
+                },
+                error: function(response){
+                    console.log("error");
+                    console.log(response);
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "/admin/total_time" ,
+                success: function(response) {
+                    console.log(response);
+                    $("#time_spent").text(response[0].count);
+                    var avg = Number(response[0].count) / Number(document.getElementById("unique_user").textContent);
+                    $("#avg_hour").text(avg);
+                },
+                error: function(response){
+                    console.log("error");
+                    console.log(response);
+                }
+            });
+        });
+
+        var chart;
+        var data;
+        var options;
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+
+        function drawChart() {
+
+
+            data = new google.visualization.DataTable();
+            data.addColumn('date', 'Time of Day');
+            data.addColumn('number', 'Minutes');
+
+             options = {
+                title: 'Rate the Day on a Scale of 1 to 10',
+                width: 900,
+                height: 500,
+                hAxis: {
+                    format: 'M/d/yy',
+                    gridlines: {count: 15}
+                },
+                vAxis: {
+                    gridlines: {color: 'none'},
+                    minValue: 0
+                }
+            };
+
+            chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+
+            $.ajax({
+                type: "GET",
+                url: "/admin/date_hour/thirty" ,
+                success: function(response) {
+                    console.log(response);
+                   for(var i = 0 ; i<response.length ; i++){
+                       var d = new Date(response[i].date);
+                       data.addRows([
+                          [new Date(d.getFullYear() , d.getMonth(), d.getDate()) , Number(response[i].hours)]
+                       ]);
+                   }
+
+                    chart.draw(data, options);
+
+                },
+                error: function(response){
+                    console.log("error");
+                    console.log(response);
+                }
+            });
+
+
+        }
+
+      /*  var button = document.getElementById('change');
+
+        button.onclick = function () {
+
+            // If the format option matches, change it to the new option,
+            // if not, reset it to the original format.
+            options.hAxis.format === 'M/d/yy' ?
+                options.hAxis.format = 'MMM dd, yyyy' :
+                options.hAxis.format = 'M/d/yy';
+
+            chart.draw(data, options);
+        }
+*/
+        function drawOnChart(days){
+           var data = new google.visualization.DataTable();
+            data.addColumn('date', 'Time of Day');
+            data.addColumn('number', 'Minutes');
+            //data.removeRows(0,data.length);
+            if(days == 30) {
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/date_hour/thirty",
+                    success: function (response) {
+                        console.log(response);
+                        for (var i = 0; i < response.length; i++) {
+                            var d = new Date(response[i].date);
+                            data.addRows([
+                                [new Date(d.getFullYear(), d.getMonth(), d.getDate()), Number(response[i].hours)]
+                            ]);
+                        }
+                        chart.draw(data,options);
+                    },
+                    error: function (response) {
+                        console.log("error");
+                        console.log(response);
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/date_hour/seven",
+                    success: function (response) {
+                        console.log(response);
+                        for (var i = 0; i < response.length; i++) {
+                            var d = new Date(response[i].date);
+                            data.addRows([
+                                [new Date(d.getFullYear(), d.getMonth(), d.getDate()), Number(response[i].hours)]
+                            ]);
+                        }
+                        chart.draw(data,options);
+                    },
+                    error: function (response) {
+                        console.log("error");
+                        console.log(response);
+                    }
+                });
+            }
+        }
+
+
+
+    </script>
+</head>
+<body>
+<div class="w3-bar w3-black">
+    <table>
+        <td>
+            <td>
+                <form action = "/index" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > User Login/SignUp </button> </form></td>
+    <td>  <form action = "/admin" method = "GET"> <button class="w3-bar-item w3-button" type ="submit" > Admin (Bonus) </button> </form></td></tr>
+    </table>>
+</div>
+<div>
+<form>
+    <label class="radio-inline">
+        <input type="radio" name="optradio" onclick="drawOnChart(7)"> Last 7 Days
+    </label>
+    <label class="radio-inline">
+        <input type="radio" name="optradio" checked = checked  onclick="drawOnChart(30)"> Last 30 Days
+    </label>
+</form><
+    /div>
+<div>
+    <h1 id = "user_type"> </h1>
+    <table>
+        <tr>
+            <td>
+                Total Unique Users <h4 id = "unique_user"> </h4>
+            </td>
+            <td>
+                Total Time Spent <h4 id = "time_spent"> </h4> <h5> hours </h5>
+            </td>
+            <td>
+                Average Hours Per User <h4 id = "avg_hour"> </h4>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<button id="change">Click to change the format</button>
+<div id="chart_div"></div>
+
+
+</body>
+</html>
