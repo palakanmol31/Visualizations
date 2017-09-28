@@ -28,7 +28,7 @@
                 success: function(response) {
                     console.log(response);
                     $("#time_spent").text(response[0].count);
-                    var avg = Number(response[0].count) / Number(document.getElementById("unique_user").textContent);
+                    var avg = Number(response[0].count) / 3;
                     $("#avg_hour").text(avg);
                 },
                 error: function(response){
@@ -141,7 +141,6 @@
         }
 
 
-
     </script>
 </head>
 <body>
@@ -187,6 +186,20 @@
             </td>
         </tr>
     </table>
+</div>
+<div style="border: solid; margin: 50px;">
+    <h1>Conclusion</h1>
+    <br>
+    <b>Explanation</b> :
+    <br> This is a response for <b>bonus</b> question. Here with the help of new UI, (admin panel) we can get an idea of the time spend by user on our website. This can really be helpful to keep analytics of our webiste.
+    <br>
+    <b>Interactions</b> :
+    <br>
+    1. Avg hours spent by user on our website.<br>
+    2. We can see the time spend by all the users for last 7 as well as 30 days by selecting the radio button.
+    <br>
+    <b>Patterns</b>
+    <br>This pattern can give us a general idea of the time spend by users on our websites, and the number of user active at a time on our website.
 </div>
 </body>
 </html>
